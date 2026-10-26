@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Pay - Payment Successful</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+  </style>
+</head>
+<body class="text-slate-900 flex flex-col items-center justify-center min-h-screen p-4 select-none" onclick="playGooglePaySoundAndVoice()">
+
+  <!-- PHONE CONTAINER WRAPPER -->
+  <div class="w-[380px] h-[720px] bg-emerald-600 rounded-[40px] shadow-2xl border-8 border-slate-900 flex flex-col justify-between overflow-hidden relative p-6 text-white text-center">
+    
+    <!-- SUCCESS ICON & AMOUNT -->
+    <div class="pt-12 flex flex-col items-center">
+      <div class="w-24 h-24 rounded-full bg-white flex items-center justify-center text-emerald-600 text-5xl mb-6 shadow-2xl animate-bounce">
+        <i class="fa-solid fa-check"></i>
+      </div>
+      
+      <h1 class="text-3xl font-extrabold tracking-tight">Payment Successful</h1>
+      <p class="text-emerald-100 text-sm mt-1">Paid to <span class="font-bold underline">Apsara Pencil Emporium</span></p>
+      
+      <div class="text-5xl font-black mt-6">₹50</div>
+    </div>
+
+    <!-- TRANSACTION DETAILS CARD -->
+    <div class="w-full bg-emerald-700/60 rounded-2xl p-4 text-left text-xs space-y-2.5 mb-4 font-mono border border-emerald-500/30">
+      <div class="flex justify-between">
+        <span class="text-emerald-200">Google Transaction ID:</span>
+        <span class="text-white">CIC928109312</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-emerald-200">From:</span>
+        <span class="text-white">HDFC Bank A/c ***4821</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-emerald-200">To:</span>
+        <span class="text-white">apsarapencils@okaxis</span>
+      </div>
+    </div>
+
+    <!-- TOUCH PROMPT BUTTON -->
+    <div class="bg-white/20 hover:bg-white/30 text-white font-bold text-xs py-3 rounded-xl transition animate-pulse">
+      <i class="fa-solid fa-volume-high mr-1"></i> Tap anywhere to play sound & voice
+    </div>
+
+  </div>
+
+  <script>
+    let hasPlayed = false;
+
+    function playGooglePaySoundAndVoice() {
+      // 1. PLAY THE GOOGLE PAY CHIME
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          const ctx = new AudioContext();
+          if (ctx.state === 'suspended') {
+            ctx.resume();
+          }
+          const now = ctx.currentTime;
+
+          const osc1 = ctx.createOscillator();
+          const gain1 = ctx.createGain();
+          osc1.type = 'sine';
+          osc1.frequency.setValueAtTime(659.25, now);
+          gain1.gain.setValueAtTime(0.4, now);
+          gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+          osc1.connect(gain1);
+          gain1.connect(ctx.destination);
+          osc1.start(now);
+          osc1.stop(now + 0.25);
+
+          const osc2 = ctx.createOscillator();
+          const gain2 = ctx.createGain();
+          osc2.type = 'sine';
+          osc2.frequency.setValueAtTime(830.61, now + 0.15);
+          gain2.gain.setValueAtTime(0.4, now + 0.15);
+          gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+          osc2.connect(gain2);
+          gain2.connect(ctx.destination);
+          osc2.start(now + 0.15);
+          osc2.stop(now + 0.4);
+
+          const osc3 = ctx.createOscillator();
+          const gain3 = ctx.createGain();
+          osc3.type = 'sine';
+          osc3.frequency.setValueAtTime(987.77, now + 0.3);
+          gain3.gain.setValueAtTime(0.5, now + 0.3);
+          gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+          osc3.connect(gain3);
+          gain3.connect(ctx.destination);
+          osc3.start(now + 0.3);
+          osc3.stop(now + 0.8);
+        }
+      } catch (e) {
+        console.log("Chime error:", e);
+      }
+
+      // 2. PLAY THE SPEECH SYNTHESIS VOICE
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance("Received payment of 50 rupees on Google Pay");
+          utterance.rate = 1.0;
+          utterance.pitch = 1.1;
+          window.speechSynthesis.speak(utterance);
+        }, 300);
+      }
+    }
+  </script>
+</body>
+</html>
